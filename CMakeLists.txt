@@ -25,15 +25,16 @@ add_sources("Code_uber.cpp"
 add_sources("Components_uber.cpp"
     PROJECTS Game
     SOURCE_GROUP "Components"
-		"Components/Player.cpp"
-		"Components/Player.h"
-        "Components/Fireball.cpp"
-		"Components/Fireball.h"
+		"Components/Fireball.cpp"
 		"Components/MovingPlatform.cpp"
+		"Components/Player.cpp"
+		"Components/SpawnPoint.cpp"
+        "Components/DamageObject.cpp"
+		"Components/DamageObject.h"
+		"Components/Fireball.h"
 		"Components/MovingPlatform.h"
-		"Components/Spawnpoint.cpp"
-		"Components/Spawnpoint.h"
-
+		"Components/Player.h"
+		"Components/SpawnPoint.h"
 )
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/CVarOverrides.h")

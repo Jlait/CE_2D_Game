@@ -28,11 +28,12 @@ inline const char* const BoolToString(bool b)
 }
 
 
-
 void CPlayerComponent::Initialize()
 {
+	lives = maxLives;
+	hitPoints = maxHitPoints;
 	q = IDENTITY;
-
+	
 	// The character controller is responsible for maintaining player physics
 	m_pCharacterController = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CCharacterControllerComponent>();
 	m_pCharacterController->GetPhysicsParameters().m_mass = 1.f;
@@ -99,7 +100,7 @@ void CPlayerComponent::InitializeLocalPlayer()
 
 	Quat q = Quat(CCamera::CreateOrientationYPR(ypr));
 
-	m_pCameraComponent->SetTransformMatrix(Matrix34::Create(Vec3(1.f), IDENTITY, Vec3(1.0f, -3.0f, 1.f)));
+	m_pCameraComponent->SetTransformMatrix(Matrix34::Create(Vec3(1.f), IDENTITY, Vec3(1.0f, -4.0f, 1.f)));
 	// Reset the mouse delta since we "used" it this frame
 	m_mouseDeltaRotation = ZERO;
 
@@ -171,7 +172,7 @@ void CPlayerComponent::UpdateMovementRequest(float frameTime) {
 	Vec3 velocity = ZERO;
 
 	float moveSpeed = 30.5f;
-	float airMoveSpeed = 5.5f;
+	float airMoveSpeed = 8.5f;
 
 	if (m_pCharacterController->IsOnGround()) {
 		jumping = false;
@@ -226,12 +227,11 @@ void CPlayerComponent::UpdateAnimation(float frameTime)
 		}
 		else if (m_wasFallingDown && m_pCharacterController->GetVelocity().z <= 0)
 		{
-			CryLog("asdd");
-			/*
+			//CryLog("Falling");
 			m_jumpAction->Stop();
 			m_jumpAction = new SSimpleAction(30U, m_fallingFragmentId);
 			m_pAnimationComponent->SetTagWithId(m_fallingTagId, true);
-			m_pAnimationComponent->QueueCustomFragment(*m_fallingAction);*/
+			m_pAnimationComponent->QueueCustomFragment(*m_jumpAction);
 		}
 	}
 
@@ -252,7 +252,6 @@ void CPlayerComponent::UpdateAnimation(float frameTime)
 		m_idleAction = new SSimpleAction(0U, m_idleFragmentId, TAG_STATE_EMPTY, IAction::Interruptable);
 		m_pAnimationComponent->QueueCustomFragment(*m_idleAction);
 
-
 		if (!m_pCharacterController->IsOnGround()) 
 		{
 			m_pAnimationComponent->SetTagWithId(m_jumpTagId, true);
@@ -266,7 +265,7 @@ void CPlayerComponent::UpdateAnimation(float frameTime)
 	{
 		CryLog("Jump");
 		m_pAnimationComponent->QueueFragmentWithId(m_jumpingFragmentId);
-		m_jumpAction = new SSimpleAction(30U, m_jumpingFragmentId);
+		m_jumpAction = new SSimpleAction(45U, m_jumpingFragmentId);
 		m_pAnimationComponent->QueueCustomFragment(*m_jumpAction);
 	}
 
@@ -281,8 +280,8 @@ void CPlayerComponent::UpdateAnimation(float frameTime)
 	if (!m_wasOnGroundLastFrame && m_pCharacterController->IsOnGround() && t_timeSinceLeftGround >= 0.2f)
 	{
 		CryLog("Land");
-		//m_fallingAction->Stop();
-		m_jumpLandAction = new SSimpleAction(10U, m_idleFragmentId);
+		m_jumpAction->Stop();
+		m_jumpLandAction = new SSimpleAction(40U, m_idleFragmentId);
 		m_pAnimationComponent->QueueCustomFragment(*m_jumpLandAction);
 	}
 	
@@ -425,6 +424,35 @@ void CPlayerComponent::OnReadyForGameplayOnServer()
 		const QuatT currentOrientation = QuatT(player.GetEntity()->GetWorldTM());
 		SRmi<RMI_WRAP(&CPlayerComponent::RemoteReviveOnClient)>::InvokeOnClient(&player, RemoteReviveParams{ currentOrientation.t, currentOrientation.q }, channelId);
 	});
+}
+
+void CPlayerComponent::ReduceHp(int dmg)
+{
+	hitPoints -= dmg;
+	if (hitPoints == 0)
+	{
+		ReduceLives();
+	}
+	CryLog("Hitpoints: " + hitPoints);
+}
+
+void CPlayerComponent::ReduceLives()
+{
+	lives -= 1;
+	hitPoints = 2;
+	CryLog("Lives: ");
+	//CryLog(lives);
+	if (lives == 0) {
+		GameOver();
+	}
+}
+
+void CPlayerComponent::GameOver()
+{
+	CryLog("Game Over");
+	Revive(CSpawnPointComponent::GetFirstSpawnPointTransform());
+	lives = maxLives;
+	hitPoints = maxHitPoints;
 }
 
 bool CPlayerComponent::RemoteReviveOnClient(RemoteReviveParams&& params, INetChannel* pNetChannel)

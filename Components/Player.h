@@ -60,6 +60,11 @@ public:
 	void OnReadyForGameplayOnServer();
 	bool IsLocalClient() const { return (m_pEntity->GetFlags() & ENTITY_FLAG_LOCAL_PLAYER) != 0; }
 	
+	void ReduceHp(int dmg);
+	void ReduceLives();
+	void GameOver();
+
+
 protected:
 	void Revive(const Matrix34& transform);
 	void HandleInputFlagChange(CEnumFlags<EInputFlag> flags, CEnumFlags<EActionActivationMode> activationMode, EInputFlagType type = EInputFlagType::Hold);
@@ -106,6 +111,10 @@ protected:
 	bool RemoteReviveOnClient(RemoteReviveParams&& params, INetChannel* pNetChannel);
 	
 protected:
+	int maxLives = 1;
+	int maxHitPoints = 2;
+	int lives;
+	int hitPoints;
 	bool m_isAlive = false;
 	bool jumping = false;
 	bool m_wasOnGroundLastFrame;

@@ -1,6 +1,6 @@
 #pragma once
 
-//#include "CryEntitySystem/IEntityComponent.h"
+#include <CryEntitySystem/IEntitySystem.h>
 #include <CryRenderer/IRenderAuxGeom.h>
 #include "CryString/CryString.h"
 ////////////////////////////////////////////////////////
@@ -39,7 +39,6 @@ public:
 	}
 	virtual void ProcessEvent(const SEntityEvent& event) override
 	{
-
 		switch (event.event)
 		{
 			// Handle the OnCollision event, in order to have the entity removed on collision

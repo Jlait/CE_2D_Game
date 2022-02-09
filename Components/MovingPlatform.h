@@ -2,7 +2,7 @@
 
 #include "CryMath/Cry_Math.h"
 #include <CryEntitySystem/IEntitySystem.h>
-#include <CryEntitySystem/IEntityComponent.h>
+#include <CryPhysics/physinterface.h>
 
 class CMovingPlatformComponent final : public IEntityComponent
 {
@@ -45,7 +45,6 @@ public:
 				//Vec3 startPos = m_pEntity->GetWorldPos();
 
 				//const Matrix34 startTransform = m_pEntity->GetWorldTM();
-				CryLog("platformi HÖÖK");
 			}
 			break;
 				// Handle the OnCollision event, in order to have the entity removed on collision
@@ -81,13 +80,14 @@ public:
 					reverse = true;
 				}
 
-				else if (startPos.z - transformation.GetTranslation().z >= -lerpSnap) 
+				else if (startPos.z - transformation.GetTranslation().z >= -lerpSnap)
 				{
 					reverse = false;
 				}
-
+				
 				pe_action_move move;
 				move.iJump = 1;
+
 				//// Apply set position and rotation to the entity
 				m_pEntity->SetWorldTM(transformation);
 				if (!reverse) {
@@ -98,7 +98,7 @@ public:
 				}
 
 				m_pEntity->GetPhysics()->Action(&move);
-
+				
 
 			}
 			break;
