@@ -12,6 +12,8 @@
 #include <DefaultComponents/Input/InputComponent.h>
 #include <DefaultComponents/Audio/ListenerComponent.h>
 
+#include "UI_Manager.h"
+
 ////////////////////////////////////////////////////////
 // Represents a player participating in gameplay
 ////////////////////////////////////////////////////////
@@ -112,7 +114,7 @@ protected:
 	
 protected:
 	int maxLives = 1;
-	int maxHitPoints = 2;
+	int maxHitPoints = 3;
 	int lives;
 	int hitPoints;
 	bool m_isAlive = false;
@@ -147,4 +149,5 @@ protected:
 	IActionPtr m_fallingAction;
 	IActionPtr m_jumpLandAction;
 
+	CUIManagerComponent* uiManager;
 };

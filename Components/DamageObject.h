@@ -35,7 +35,7 @@ public:
 
 	static CryGUID& IID()
 	{
-		static CryGUID id = "{4B6950D9-1FEA-430A-9EF6-0BCBE8383852}"_cry_guid;
+		static CryGUID id = "{8F4B0051-B39D-4ECE-9D7E-5652EF12BC56}"_cry_guid;
 		return id;
 	}
 

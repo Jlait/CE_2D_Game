@@ -1,13 +1,13 @@
 #include "StdAfx.h"
 #include "DamageObject.h"
-
+#include "Player.h"
+#include "UI_Manager.h"
 #include <CrySchematyc/Env/IEnvRegistrar.h>
 #include <CrySchematyc/Env/IEnvRegistry.h>
 #include <CrySchematyc/Env/Elements/EnvComponent.h>
 #include <CryCore/StaticInstanceList.h>
 #include <CryPhysics/physinterface.h>
 #include <CryRenderer/IRenderAuxGeom.h>
-
 
 class CPlayerComponent;
 
@@ -69,6 +69,7 @@ void CDamageObjectComponent::ProcessEvent(const SEntityEvent& event)
 		{
 			m_collidedWithPlayer = true;
 			entity->GetComponent<CPlayerComponent>()->ReduceHp(1);
+
 		}
 	}
 	break;

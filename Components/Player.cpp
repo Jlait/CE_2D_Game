@@ -80,8 +80,6 @@ void CPlayerComponent::Initialize()
 	
 	// Register the RemoteReviveOnClient function as a Remote Method Invocation (RMI) that can be executed by the server on clients
 	SRmi<RMI_WRAP(&CPlayerComponent::RemoteReviveOnClient)>::Register(this, eRAT_NoAttach, false, eNRT_ReliableOrdered);
-
-
 }
 
 void CPlayerComponent::InitializeLocalPlayer()
@@ -166,6 +164,10 @@ void CPlayerComponent::InitializeLocalPlayer()
 	// Bind the shoot action to left mouse click
 	m_pInputComponent->BindAction("player", "shoot", eAID_KeyboardMouse, EKeyId::eKI_Mouse1);
 
+	if (gEnv->pEntitySystem->GetEntity(16)->GetComponent<CUIManagerComponent>()) {
+		uiManager = gEnv->pEntitySystem->GetEntity(16)->GetComponent<CUIManagerComponent>();
+	}
+		//uiManager = dynamic_cast<CUIManagerComponent*> (IEntityComponent);
 }
 
 void CPlayerComponent::UpdateMovementRequest(float frameTime) {
@@ -429,6 +431,7 @@ void CPlayerComponent::OnReadyForGameplayOnServer()
 void CPlayerComponent::ReduceHp(int dmg)
 {
 	hitPoints -= dmg;
+	uiManager->ReduceHitpoints(hitPoints);
 	if (hitPoints == 0)
 	{
 		ReduceLives();
@@ -439,9 +442,8 @@ void CPlayerComponent::ReduceHp(int dmg)
 void CPlayerComponent::ReduceLives()
 {
 	lives -= 1;
-	hitPoints = 2;
+	hitPoints = 3;
 	CryLog("Lives: ");
-	//CryLog(lives);
 	if (lives == 0) {
 		GameOver();
 	}
@@ -453,6 +455,7 @@ void CPlayerComponent::GameOver()
 	Revive(CSpawnPointComponent::GetFirstSpawnPointTransform());
 	lives = maxLives;
 	hitPoints = maxHitPoints;
+	uiManager->ResetUI();
 }
 
 bool CPlayerComponent::RemoteReviveOnClient(RemoteReviveParams&& params, INetChannel* pNetChannel)
